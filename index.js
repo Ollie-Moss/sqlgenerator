@@ -71,8 +71,8 @@ const generateProperty = (_, i) => {
         city: faker.location.city(),
         suburb: faker.location.city(),
         postal_code: faker.location.zipCode(),
-        maintanenceId: i+1,
-        advertismentId: i+1
+        maintanenceId: (i+1 > 20) ? null : i+1,
+        advertismentId: (i+1 > 20) ? null : i+1
     }
 }
 
@@ -83,7 +83,7 @@ const generatePropertyInstance = (_, i) => {
         available: faker.number.int({min: 0, max: 1}),
         propertyId: i+1,
         ownerId: i+1,
-        agentId: i+1
+        agentId: faker.number.int({min: 1, max: 20})
     }
 }
 
@@ -125,11 +125,11 @@ const createInsertStatement = (table, columns, data) => {
     for(let i = 0; i < Object.keys(data).length; i++){
         let current = data[Object.keys(data)[i]];
         if(typeof(current) == "string"){
-            statement += "`" + current + "`";
+            statement += "'" + current + "'";
         }else if(typeof(current) == "number") {
             statement += current
         }else if(current == null){
-            statement += "null"
+            statement += "NULL"
         }
         if(i+1 >= Object.keys(data).length){
             statement += ");\n";
