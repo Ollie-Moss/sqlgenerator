@@ -4,12 +4,12 @@ const fs = require("fs");
 // 100
 const generateClient = (_, i) => {
     return {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
+        firstName: faker.person.firstName().replaceAll("'", ""),
+        lastName: faker.person.lastName().replaceAll("'", ""),
         dob: faker.date.birthdate().toISOString().split("T")[0],
         phone: faker.phone.imei(),
         email: faker.internet.email(),
-        address: faker.location.streetAddress(),
+        address: faker.location.streetAddress().replaceAll("'", ""),
         tenant: faker.number.int({min: 0, max: 1})
     }
 }
@@ -17,7 +17,8 @@ const generateClient = (_, i) => {
 // 20
 const generateAdvert = (_, i) => {
     return {
-        description: "Advert Description",
+        publisher: faker.person.fullName().replaceAll("'", ""),
+        location: faker.location.streetAddress().replaceAll("'", ""),
         date: faker.date.future().toISOString().split("T")[0],
         time: faker.date.birthdate().toString().split(" ")[4],
     }
@@ -35,12 +36,12 @@ const generateMaintanence = (_, i) => {
 // 50
 const generateOwner = (_, i) => {
     return {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
+        firstName: faker.person.firstName().replaceAll("'", ""),
+        lastName: faker.person.lastName().replaceAll("'", ""),
         dob: faker.date.birthdate().toISOString().split("T")[0],
         phone: faker.phone.imei(),
         email: faker.internet.email(),
-        address: faker.location.streetAddress()
+        address: faker.location.streetAddress().replaceAll("'", "")
     }
 }
 
@@ -48,8 +49,10 @@ const generateOwner = (_, i) => {
 const generateManager = (_, i) => {
     return {
         managerId: null,
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
+        firstName: faker.person.firstName().replaceAll("'", ""),
+        lastName: faker.person.lastName().replaceAll("'", ""),
+        phone: faker.phone.imei(),
+        email: faker.internet.email(),
         position: "manager"
     }
 }
@@ -58,8 +61,10 @@ const generateManager = (_, i) => {
 const generateAgent = (_, i) => {
     return {
         managerId: faker.number.int({min: 0, max: 3}),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
+        firstName: faker.person.firstName().replaceAll("'", ""),
+        lastName: faker.person.lastName().replaceAll("'", ""),
+        phone: faker.phone.imei(),
+        email: faker.internet.email(),
         position: "agent"
     }
 }
@@ -67,9 +72,9 @@ const generateAgent = (_, i) => {
 const generateProperty = (_, i) => {
     return {
         property_number: i+1,
-        street: faker.location.street(),
-        city: faker.location.city(),
-        suburb: faker.location.city(),
+        street: faker.location.streetAddress().replaceAll("'", ""),
+        city: faker.location.city().replaceAll("'", ""),
+        suburb: faker.location.city().replaceAll("'", ""),
         postal_code: faker.location.zipCode(),
         maintanenceId: (i+1 > 20) ? null : i+1,
         advertismentId: (i+1 > 20) ? null : i+1
@@ -80,29 +85,29 @@ const generateProperty = (_, i) => {
 const generatePropertyInstance = (_, i) => {
     return {
         numberOfTenants: faker.number.int({min: 1, max: 10}),
-        available: faker.number.int({min: 0, max: 1}),
+        available: 0,
         propertyId: i+1,
         ownerId: i+1,
         agentId: faker.number.int({min: 1, max: 20})
     }
 }
 
-// 80
+// 50
 const generateLease = (_, i) => {
     return {
-        propertyInstanceId: faker.number.int({min: 1, max: 50}),
+        propertyInstanceId: i+1,
         rent: faker.number.int({min: 1000, max: 2000}),
         bond: faker.number.int({min: 3000, max: 3250}),
-        leaseStart: faker.date.birthdate().toISOString().split("T")[0],
-        leaseEnd: faker.date.birthdate().toISOString().split("T")[0],
+        leaseStart: faker.date.between({from: '2019-01-01T00:00:00.000Z', to: '2020-01-01T00:00:00.000Z'}).toISOString().split("T")[0],
+        leaseEnd: faker.date.between({from: '2023-01-01T00:00:00.000Z', to: '2024-01-01T00:00:00.000Z'}).toISOString().split("T")[0],
         rentFrquency: faker.number.int({min: 7, max: 14})
     }
 }
-// 80
+// 50
 const generateClientLease = (_, i) => {
     return {
-        leaseId: i+1,
-        clientId: i+1
+        leaseId: faker.number.int({min: 1, max: 50}),
+        clientId: faker.number.int({min: 1, max: 100})
     }
 }
 
@@ -110,12 +115,27 @@ const generateClientLease = (_, i) => {
 const generateBranch = (_, i) => {
     return {
         managerId: i+1,
-        name: faker.person.firstName(),
-        street: faker.location.street(),
-        city: faker.location.city()
+        name: faker.person.firstName().replaceAll("'", ""),
+        street: faker.location.streetAddress().replaceAll("'", ""),
+        city: faker.location.city().replaceAll("'", "")
+    }
+}
+// 100
+const generateClientViewing = (_, i) => {
+    return {
+        clientId: faker.number.int({min: 1, max: 100}),
+        propertyId: faker.number.int({min: 1, max: 50}),
+        date: faker.date.between({from: '2022-01-01T00:00:00.000Z', to: '2023-10-10T00:00:00.000Z'}).toISOString().split("T")[0]
     }
 }
 
+const generateRegistration = (_, i) => {
+    return {
+        clientId: i+1,
+        branchId: faker.number.int({min: 1, max: 3}),
+        date: faker.date.between({from: '2020-01-01T00:00:00.000Z', to: '2023-10-10T00:00:00.000Z'}).toISOString().split("T")[0]
+    }
+}
 const createData = async (num, generateData) => {
     return Array.from({length: num}, generateData);
 }
@@ -145,11 +165,11 @@ const createInsertScript = () => {
 
     createData(3, generateManager).then(result => {
         result.forEach(row => {
-            finalInsertStatement += createInsertStatement("staff", "`manager_id`, `first_name`, `last_name`, `position`", row)
+            finalInsertStatement += createInsertStatement("staff", "`manager_id`, `first_name`, `last_name`, `phone`, `email`, `position`", row)
         });
         createData(17, generateAgent).then(result1 => {
             result1.forEach(row => {
-                finalInsertStatement += createInsertStatement("staff", "`manager_id`, `first_name`, `last_name`, `position`", row)
+                finalInsertStatement += createInsertStatement("staff", "`manager_id`, `first_name`, `last_name`, `phone`, `email`, `position`", row)
             })
             createData(3, generateBranch).then(result2 => {
                 result2.forEach(row => {
@@ -157,7 +177,7 @@ const createInsertScript = () => {
                 })
                 createData(20, generateAdvert).then(result3 => {
                     result3.forEach(row => {
-                        finalInsertStatement += createInsertStatement("advertisment", "`description`, `date`, `time`", row)
+                        finalInsertStatement += createInsertStatement("advertisment", "`publisher`, `location`, `date`, `time`", row)
                     })
                     createData(20, generateMaintanence).then(result4 => {
                         result4.forEach(row => {
@@ -179,15 +199,25 @@ const createInsertScript = () => {
                                         result8.forEach(row => {
                                             finalInsertStatement += createInsertStatement("property_instance", "`number_of_tenants`, `available`, `property_id`, `owner_id`, `agent_id`", row)
                                         })
-                                        createData(80, generateLease).then(result9 => {
+                                        createData(50, generateLease).then(result9 => {
                                             result9.forEach(row => {
                                                 finalInsertStatement += createInsertStatement("lease", "`property_instance_id`, `rent`, `bond`, `lease_start`, `lease_end`, `rent_frequency`", row)
                                             })
-                                            createData(80, generateClientLease).then(result10 => {
+                                            createData(50, generateClientLease).then(result10 => {
                                                 result10.forEach(row => {
                                                     finalInsertStatement += createInsertStatement("client_lease", "`lease_id`, `client_id`", row)
                                                 })
-                                                fs.writeFile("./insertScript.sql", finalInsertStatement, (err) => err && console.log(err));
+                                                createData(50, generateClientViewing).then(result11 => {
+                                                    result11.forEach(row => {
+                                                        finalInsertStatement += createInsertStatement("client_viewing", "`client_id`, `property_instance_id`, `viewing_date`", row)
+                                                    })
+                                                    createData(100, generateRegistration).then(result11 => {
+                                                        result11.forEach(row => {
+                                                            finalInsertStatement += createInsertStatement("registration", "`client_id`, `branch_id`, `registration_date`", row)
+                                                        })
+                                                        fs.writeFile("./insertScript.sql", finalInsertStatement, (err) => err && console.log(err));
+                                                    })
+                                                })
                                             })
                                         })
                                     })
